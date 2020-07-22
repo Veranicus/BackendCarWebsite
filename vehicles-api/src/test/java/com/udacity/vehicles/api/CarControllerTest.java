@@ -122,6 +122,7 @@ public class CarControllerTest {
 
     @Test
     public void updateCar() throws Exception {
+//        Help from https://stackoverflow.com/questions/20504399/testing-springs-requestbody-using-spring-mockmvc
         carService.save(getCar());
         mvc.perform(put("/cars/1").content(asJsonString(getCar())).contentType("application/json"))
                 .andExpect(status().isOk())
@@ -129,6 +130,7 @@ public class CarControllerTest {
     }
 
     private static String asJsonString(final Object obj) {
+//        Method from https://stackoverflow.com/questions/20504399/testing-springs-requestbody-using-spring-mockmvc
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
