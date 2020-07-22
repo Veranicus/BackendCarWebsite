@@ -1,5 +1,6 @@
 package com.udacity.vehicles.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
 import com.udacity.vehicles.domain.Condition;
@@ -95,7 +96,7 @@ public class CarControllerTest {
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
-        mvc.perform(get("/cars"))
+        mvc.perform(get("/cars").contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8));
         verify(carService,times(1)).list();
@@ -113,10 +114,26 @@ public class CarControllerTest {
          *   a vehicle by ID. This should utilize the car from `getCar()` below.
          */
         carService.save(getCar());
-        mvc.perform(get("/cars/1"))
+        mvc.perform(get("/cars/1").contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8));
         verify(carService,times(1)).findById(1L);
+    }
+
+    @Test
+    public void updateCar() throws Exception {
+        carService.save(getCar());
+        mvc.perform(put("/cars/1").content(asJsonString(getCar())).contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8));
+    }
+
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -132,7 +149,7 @@ public class CarControllerTest {
          */
 
         carService.save(getCar());
-        mvc.perform(delete("/cars/1"))
+        mvc.perform(delete("/cars/1").contentType("application/json"))
                 .andExpect(status().isNoContent());
         verify(carService,times(1)).delete(1L);
     }
